@@ -31,7 +31,8 @@
     ],
     "require": {
         "php": ">=8.1",
-        "maatwebsite/excel": "*",
+        "phpoffice/phpspreadsheet": "*",
+        "maatwebsite/excel": "^3.1.67",
         "tymon/jwt-auth": "*"
     },
     "extra": {
