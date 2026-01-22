@@ -51,7 +51,7 @@ class DatabaseInitialSeedersCommand extends Command
     /**
      * Execute the console command.
      *
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function handle(): void
     {
