@@ -1,10 +1,8 @@
 {
     "name": "ahmed-arafat/all-in-one",
-    "description": "test",
+    "description": "Laravel utilities: sorting, filtering, searching, file uploads, Excel, enums, JWT, validation rules, migrations, and seeders",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.1",
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "AhmedArafat\\AllInOne\\": "src/"
@@ -13,7 +11,7 @@
     "authors": [
         {
             "name": "Ahmed Arafat",
-            "email": "ahmedmoyousry.bis@gmail.com"
+            "email": "aarafat.swe@gmail.com"
         }
     ],
     "keywords": [
@@ -26,11 +24,12 @@
         "jwt",
         "validation rules",
         "git",
-        "migrtaions",
+        "migrations",
         "database seeder"
     ],
     "require": {
         "php": ">=8.1",
+        "illuminate/support": "^10.0|^11.0",
         "phpoffice/phpspreadsheet": "*",
         "maatwebsite/excel": "^3.1.67",
         "tymon/jwt-auth": "*"
@@ -41,5 +40,10 @@
                 "AhmedArafat\\AllInOne\\AllInOneServiceProvider"
             ]
         }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }
