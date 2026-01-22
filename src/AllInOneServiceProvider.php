@@ -18,10 +18,21 @@ class AllInOneServiceProvider extends ServiceProvider
                 DatabaseInitialSeedersCommand::class,
             ]);
         }
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/all-in-one.php' =>
+                    config_path('all-in-one.php'),
+            ], 'all-in-one-config');
+        }
         $this->app['router']->aliasMiddleware('jwt', JwtMiddleware::class);
     }
+
     public function register(): void
     {
         // bindings, config merge, singletons
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/all-in-one.php',
+            'all-in-one'
+        );
     }
 }

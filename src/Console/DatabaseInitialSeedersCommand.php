@@ -5,6 +5,7 @@ namespace AhmedArafat\AllInOne\Console;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 use function Laravel\Prompts\progress;
 
 class DatabaseInitialSeedersCommand extends Command
@@ -21,40 +22,40 @@ class DatabaseInitialSeedersCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Run All Database Required Seeders';
+    protected $description = 'Initialize the database by running all required seeders';
 
     private array $allSeedersObjects = [];
 
     public function __construct()
     {
         parent::__construct();
-        $this->allSeedersObjects = [
-            //new XyzSeeder(),
-        ];
+        $this->allSeedersObjects = config('all-in-one.database_seeders', []);
     }
 
-    private function executeAllSeeders()
+    /**
+     * @throws Throwable
+     */
+    private function executeAllSeeders(): void
     {
         DB::transaction(function () {
-            foreach ($this->allSeedersObjects as $key => $object) {
-                $object->run();
-            }
+            progress(
+                'Seeding Database ...',
+                count($this->allSeedersObjects),
+                function ($num) {
+                    $this->allSeedersObjects[$num]->run();
+                }
+            );
         });
     }
 
     /**
      * Execute the console command.
+     *
      * @throws Exception
      */
     public function handle(): void
     {
-        progress(
-            "Seeding Database ...",
-            count($this->allSeedersObjects),
-            function ($num) {
-                $this->allSeedersObjects[$num]->run();
-            }
-        );
-        $this->info("Done Seeding Database <3");
+        $this->executeAllSeeders();
+        $this->info('Done Seeding Database <3');
     }
 }
