@@ -1,4 +1,5 @@
-- ApiResponser Trait
+- ~~ApiResponser Trait~~
+- ~~JsonApiResponser Trait~~
 - CustomRule Traits
 - DateHelper Trait
 - EnumHelper Trait
