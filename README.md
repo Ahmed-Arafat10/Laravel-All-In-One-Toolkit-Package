@@ -2,7 +2,7 @@
 - ~~JsonApiResponser Trait~~
 - ~~CustomRule Traits~~
 - ~~DateHelper Trait~~
-- EnumHelper Trait
+- ~~EnumHelper Trait~~
 - ExcelFormater Trait
 - FileHelper Trait
 - Filterable Trait
