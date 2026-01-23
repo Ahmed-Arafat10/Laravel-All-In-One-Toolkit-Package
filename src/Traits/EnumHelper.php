@@ -7,7 +7,7 @@ use UnitEnum;
 use BackedEnum;
 
 /**
- * Trait EnumHelperTrait
+ * Trait EnumHelper
  *
  * A set of helper methods to simplify working with PHP 8.1+ enums,
  * especially when integrating enums with Laravel APIs, validation,
@@ -22,7 +22,7 @@ use BackedEnum;
  * require the enum to be a BackedEnum.
  *
  */
-trait EnumHelperTrait
+trait EnumHelper
 {
     /**
      * Get all enum values.
