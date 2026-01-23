@@ -2,73 +2,160 @@
 
 namespace AhmedArafat\AllInOne\Traits;
 
-use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
- * displays the json response message
+ * Trait ApiResponser
  *
+ * Provides a standardized and stable structure for API responses.
+ *
+ * IMPORTANT DESIGN RULE:
+ * ---------------------
+ * - This trait DOES NOT return HTTP responses.
+ * - It ONLY builds response payloads (arrays).
+ * - JsonApiResponser trait is responsible for returning response()->json().
  */
 trait ApiResponser
 {
-    private function successResponse($data, $code)
+    /**
+     * Build a successful API response payload.
+     *
+     * This method represents the canonical "success" response shape
+     * across the entire application.
+     *
+     * @param mixed $data The main response payload (models, arrays, primitives, etc.)
+     * @param string|null $message Optional human-readable message
+     * @param array $meta Optional metadata (pagination, flags, versioning, etc.)
+     *
+     * @return array{
+     *     success: bool,
+     *     message: string|null,
+     *     data: mixed,
+     *     errors: null,
+     *     meta: array
+     * }
+     */
+    protected function apiSuccess(
+        mixed   $data = null,
+        ?string $message = null,
+        array   $meta = []
+    ): array
     {
-        return response()->json($data, $code);
-    }
-
-    public function errorResponse($message, $code)
-    {
-        $res = [];
-        if (is_array($message)) {
-            foreach ($message as $item) {
-                $res[] = is_array($item) ? $item[0] : $item;
-            }
-        } else $res = $message;
-        return response()->json(["status" => false, "message" => $res, 'data' => [], 'code' => $code], $code);
-    }
-
-    public function errorResponseAsArray($message, $code)
-    {
-        return response()->json(["status" => false, "message" => $message, 'data' => [], 'code' => $code], $code);
-    }
-
-    protected function showAll($collection, $message = "", $code = 200)
-    {
-        return $this->successResponse(["status" => true, "message" => $message, "data" => $collection], $code);
-    }
-
-    protected function showOne($model, $message = '', $code = 200)
-    {
-        return $this->successResponse(["status" => true, "message" => $message, "data" => $model], $code);
-    }
-
-    protected function showMessage($data, $message = '', $code = 200)
-    {
-        return $this->successResponse([
-            'status' => true,
-            'message' => $message,
-            'data' => $data
-        ], $code);
-    }
-
-    protected function showOnlyMessage($message = '', $code = 200)
-    {
-        return $this->successResponse([
-            'status' => true,
-            'message' => $message,
-        ], $code);
-    }
-
-    protected function showPaginate($paginate, $message = '', $code = 200)
-    {
-        $data = $paginate->getCollection();
-        $paginator = $paginate->toArray();
-        unset($paginator['data']);
-        return $this->successResponse([
-            'status' => true,
+        return [
+            'success' => true,
             'message' => $message,
             'data' => $data,
-            'paginator' => $paginator
-        ], $code);
+            'errors' => null,
+            'meta' => $meta,
+        ];
+    }
+
+    /**
+     * Build a failed API response payload.
+     *
+     * This method is used for:
+     * - Validation errors
+     * - Business rule violations
+     * - Domain-level failures
+     *
+     * It intentionally separates:
+     * - A human-readable message
+     * - A machine-readable errors array
+     *
+     * @param string $message High-level error message
+     * @param array $errors Detailed error data (field => messages, codes, etc.)
+     * @param array $meta Optional metadata (trace_id, error_code, etc.)
+     *
+     * @return array{
+     *     success: bool,
+     *     message: string,
+     *     data: null,
+     *     errors: array,
+     *     meta: array
+     * }
+     */
+    protected function apiError(
+        string $message,
+        array  $errors = [],
+        array  $meta = []
+    ): array
+    {
+        return [
+            'success' => false,
+            'message' => $message,
+            'data' => null,
+            'errors' => $errors,
+            'meta' => $meta,
+        ];
+    }
+
+    /**
+     * Build a paginated API response payload.
+     *
+     * This method standardizes pagination output and prevents
+     * leaking internal paginator structures to the client.
+     *
+     * It extracts:
+     * - Items
+     * - Pagination metadata
+     *
+     * @param LengthAwarePaginator $paginator Laravel paginator instance
+     * @param string|null $message Optional response message
+     *
+     * @return array{
+     *     success: bool,
+     *     message: string|null,
+     *     data: array,
+     *     errors: null,
+     *     meta: array{
+     *         pagination: array{
+     *             total: int,
+     *             per_page: int,
+     *             current_page: int,
+     *             last_page: int
+     *         }
+     *     }
+     * }
+     */
+    protected function apiPaginated(
+        LengthAwarePaginator $paginator,
+        ?string              $message = null
+    ): array
+    {
+        return $this->apiSuccess(
+            $paginator->items(),
+            $message,
+            [
+                'pagination' => [
+                    'total' => $paginator->total(),
+                    'per_page' => $paginator->perPage(),
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Build a response that contains only a message.
+     *
+     * Useful for:
+     * - Delete operations
+     * - State changes
+     * - Acknowledgements
+     *
+     * @param string $message
+     *
+     * @return array{
+     *     success: bool,
+     *     message: string,
+     *     data: null,
+     *     errors: null,
+     *     meta: array
+     * }
+     */
+    protected function apiMessage(string $message): array
+    {
+        return $this->apiSuccess(null, $message);
     }
 }
