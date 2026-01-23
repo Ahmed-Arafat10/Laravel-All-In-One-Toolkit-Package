@@ -1,6 +1,6 @@
 - ~~ApiResponser Trait~~
 - ~~JsonApiResponser Trait~~
-- CustomRule Traits
+- ~~CustomRule Traits~~
 - DateHelper Trait
 - EnumHelper Trait
 - ExcelFormater Trait
