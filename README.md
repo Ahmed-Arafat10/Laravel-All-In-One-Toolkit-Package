@@ -9,7 +9,7 @@
 - GenericHelper Trait
 - MigrationHelper Trait
 - ~~PaginatorHelper Trait~~
-- QueryParameter Trait
+- ~~QueryParameter Trait~~
 - Searchable Trait
 - SeederHelper Trait
 - Sortable Trait
