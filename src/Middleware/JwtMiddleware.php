@@ -2,39 +2,43 @@
 
 namespace AhmedArafat\AllInOne\Middleware;
 
-use AhmedArafat\AllInOne\Traits\ApiResponser;
 use Closure;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use AhmedArafat\AllInOne\Traits\JsonApiResponser;
 
 class JwtMiddleware
 {
-    use ApiResponser;
+    use JsonApiResponser;
 
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
+     * @param Request $request
+     * @param \Closure $next
+     * @param string $guard
+     * @return Response
      */
-    public function handle(Request $request, Closure $next, $guard = 'user'): Response
+    public function handle(Request $request, Closure $next, string $guard = 'user'): Response
     {
-        $user = request()->user($guard);
         try {
-            JWTAuth::parseToken()->authenticate();
-        } catch (Exception $e) {
-            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-                return $this->showMessage(null, __("Token Is Invalid"), 422);
-            } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-                return $this->showMessage(null, __("Token Is Expired"), 422);
-            } else {
-                return $this->showMessage(null, __("Unauthenticated User"), 422);
+            Auth::shouldUse($guard);
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return $this->jsonMessage(__('Unauthenticated user'), 401);
             }
+        } catch (TokenInvalidException) {
+            return $this->jsonMessage(__('Token is invalid'), 401);
+        } catch (TokenExpiredException) {
+            return $this->jsonMessage(__('Token has expired'), 401);
+        } catch (Throwable) {
+            return $this->jsonMessage(__('Unauthenticated user'), 401);
         }
-        if (!$user) return $this->showMessage(null, __("Unauthenticated User #2"), 422);
-        Auth::shouldUse($guard);
         return $next($request);
     }
 }
