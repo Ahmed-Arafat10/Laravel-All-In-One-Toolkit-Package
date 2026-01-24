@@ -14,7 +14,7 @@
 - SeederHelper Trait
 - Sortable Trait
 
-- JwtMiddleware Middleware
+- ~~JwtMiddleware Middleware~~
 
 - ValidationErrorsAsArray	Exception
 - ExceptionWithApiResponser Exception
