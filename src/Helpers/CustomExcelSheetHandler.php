@@ -2,13 +2,13 @@
 
 namespace AhmedArafat\AllInOne\Helpers;
 
-use AhmedArafat\AllInOne\Traits\ExcelFormaterTrait;
+use AhmedArafat\AllInOne\Traits\ExcelFormatter;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class CustomExcelSheetHandler
 {
-    use ExcelFormaterTrait;
+    use ExcelFormatter;
 
 
     protected array $titleCells;

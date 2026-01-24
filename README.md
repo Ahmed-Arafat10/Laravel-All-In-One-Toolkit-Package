@@ -3,7 +3,7 @@
 - ~~CustomRule Traits~~
 - ~~DateHelper Trait~~
 - ~~EnumHelper Trait~~
-- ExcelFormater Trait
+- ~~ExcelFormatter Trait~~
 - ~~FileHelper Trait~~
 - Filterable Trait
 - GenericHelper Trait

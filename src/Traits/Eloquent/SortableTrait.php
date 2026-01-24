@@ -1,6 +1,6 @@
 <?php
 
-namespace AhmedArafat\AllInOne\Traits;
+namespace AhmedArafat\AllInOne\Traits\Eloquent;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
+use function AhmedArafat\AllInOne\Traits\__;
 
 trait SortableTrait
 {

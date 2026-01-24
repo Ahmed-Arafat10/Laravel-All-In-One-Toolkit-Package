@@ -1,9 +1,10 @@
 <?php
 
-namespace AhmedArafat\AllInOne\Traits;
+namespace AhmedArafat\AllInOne\Traits\Eloquent;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use function AhmedArafat\AllInOne\Traits\request;
 
 trait FilterableTrait
 {
