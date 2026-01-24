@@ -8,7 +8,7 @@
 - Filterable Trait
 - GenericHelper Trait
 - MigrationHelper Trait
-- PaginatorHelper Trait
+- ~~PaginatorHelper Trait~~
 - QueryParameter Trait
 - Searchable Trait
 - SeederHelper Trait
