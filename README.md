@@ -4,7 +4,7 @@
 - ~~DateHelper Trait~~
 - ~~EnumHelper Trait~~
 - ExcelFormater Trait
-- FileHelper Trait
+- ~~FileHelper Trait~~
 - Filterable Trait
 - GenericHelper Trait
 - MigrationHelper Trait
