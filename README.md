@@ -13,6 +13,8 @@ Built for real-world Laravel applications, not demos.
 ![License](https://img.shields.io/github/license/ahmed-arafat/laravel-allinone-toolkit)
 ![Packagist Version](https://img.shields.io/packagist/v/ahmed-arafat/laravel-allinone-toolkit)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/ahmed-arafat/laravel-allinone-toolkit)
+![Maintained](https://img.shields.io/badge/maintained-yes-success)
+![Stable](https://img.shields.io/badge/stability-stable-success)
 
 ---
 
@@ -519,3 +521,55 @@ trait SortableTrait
     ): Builder;
 }
 ```
+
+
+
+
+## Project Structure
+
+```text
+src/
+ ├── Api/
+ ├── Console/
+ ├── Eloquent/
+ ├── Exceptions/
+ ├── Helpers/
+ ├── Middleware/
+ ├── Traits/
+ └── Support/
+```
+
+---
+
+## Who Is This For?
+
+- Laravel developers building APIs or admin panels
+- Teams that want consistent validation and response structures
+- Projects that frequently implement filtering, searching, and sorting
+- Developers who value clean abstractions over copy-pasted snippets
+
+---
+
+## Versioning
+
+This package follows **semantic versioning**.
+
+- `1.x` — Stable public API
+- Minor versions may add new features
+- Breaking changes will only occur in major versions
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+- Follow PSR-12 coding standards
+- Write clear commit messages
+- Add tests for new functionality when applicable
+
+---
+
+## License
+
+Laravel All-In-One Toolkit is open-sourced software licensed under the MIT license.
