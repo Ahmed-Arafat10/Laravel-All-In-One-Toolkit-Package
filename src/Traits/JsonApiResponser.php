@@ -22,7 +22,7 @@ trait JsonApiResponser
     /**
      * Return a successful JSON response.
      */
-    protected function jsonSuccess(
+    public function jsonSuccess(
         mixed   $data = null,
         ?string $message = null,
         int     $status = 200,
@@ -38,7 +38,7 @@ trait JsonApiResponser
     /**
      * Return a failed JSON response.
      */
-    protected function jsonError(
+    public function jsonError(
         string $message,
         int    $status = 400,
         array  $errors = [],
@@ -90,7 +90,7 @@ trait JsonApiResponser
      *
      * @return JsonResponse
      */
-    protected function jsonMessage(
+    public function jsonMessage(
         string $message,
         int    $status = 200
     ): JsonResponse
