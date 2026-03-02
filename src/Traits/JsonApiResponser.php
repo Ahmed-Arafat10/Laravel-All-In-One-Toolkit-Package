@@ -20,7 +20,7 @@ trait JsonApiResponser
     use ApiResponser;
 
     /**
-     * Return a successful JSON r esponse.
+     * Return a successful JSON response.
      */
     public function jsonSuccess(
         mixed   $data = null,
