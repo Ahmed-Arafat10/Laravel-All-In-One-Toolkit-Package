@@ -8,13 +8,13 @@ Built for real-world Laravel applications, not demos.
 
 ## Badges
 
-![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)
-![Laravel](https://img.shields.io/badge/laravel-%5E10-red)
-![License](https://img.shields.io/github/license/ahmed-arafat/laravel-allinone-toolkit)
-![Packagist Version](https://img.shields.io/packagist/v/ahmed-arafat/laravel-allinone-toolkit)
-![Packagist Downloads](https://img.shields.io/packagist/dt/ahmed-arafat/laravel-allinone-toolkit)
-![Maintained](https://img.shields.io/badge/maintained-yes-success)
-![Stable](https://img.shields.io/badge/stability-stable-success)
+![PHP](https://img.shields.io/badge/php-%3E%3D8.1-blue)
+![Laravel](https://img.shields.io/badge/laravel-10%20|%2011%20|%2012-red)
+![License](https://img.shields.io/github/license/ahmed-arafat/laravel-allinone-toolkit)  <br>
+![Packagist Version](https://img.shields.io/packagist/v/ahmed-arafat/laravel-allinone-toolkit) <br>
+![Packagist Downloads](https://img.shields.io/packagist/dt/ahmed-arafat/laravel-allinone-toolkit)  <br>
+![Maintained](https://img.shields.io/badge/maintained-yes-success)  <br>
+![Stable](https://img.shields.io/badge/stability-stable-success)  <br>
 
 ---
 
