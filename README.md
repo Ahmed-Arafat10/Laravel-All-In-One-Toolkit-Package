@@ -17,7 +17,7 @@
 - ~~JwtMiddleware Middleware~~
 
 - ValidationErrorsAsArray	Exception
-- ExceptionWithApiResponser Exception
+- ExceptionWithJsonApiResponser Exception
 
 
 - GitCommand Command
@@ -25,7 +25,7 @@
 
 - CustomMigrationHelper Helper
 - Date Helper
-- Exception Helper
+- ~~Exception Helper~~
 - FileUploader Helper
 - Generic Helper
 

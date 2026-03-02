@@ -42,7 +42,7 @@ class DatabaseInitialSeedersCommand extends Command
                 'Seeding Database ...',
                 count($this->allSeedersObjects),
                 function ($num) {
-                    $this->allSeedersObjects[$num]->run();
+                    (new $this->allSeedersObjects[$num])->run();
                 }
             );
         });
