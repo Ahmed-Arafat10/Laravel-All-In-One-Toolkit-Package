@@ -1,5 +1,5 @@
 {
-    "name": "ahmed-arafat/all-in-one",
+    "name": "ahmed-arafat/laravel-allinone-toolkit",
     "description": "Laravel utilities: sorting, filtering, searching, file uploads, Excel, enums, JWT, validation rules, migrations, and seeders",
     "type": "library",
     "license": "MIT",
