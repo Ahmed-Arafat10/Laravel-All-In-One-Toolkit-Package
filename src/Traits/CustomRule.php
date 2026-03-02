@@ -24,11 +24,11 @@ trait CustomRule
      * This method wraps Laravel's Password rule and allows
      * enabling or disabling individual strength constraints.
      *
-     * @param int  $min              Minimum password length
-     * @param bool $hasMixed         Require upper & lower case letters
-     * @param bool $hasNumbers       Require numeric characters
-     * @param bool $hasSymbols       Require special characters
-     * @param bool $uncompromised    Check password against known data leaks
+     * @param int $min Minimum password length
+     * @param bool $hasMixed Require upper & lower case letters
+     * @param bool $hasNumbers Require numeric characters
+     * @param bool $hasSymbols Require special characters
+     * @param bool $uncompromised Check password against known data leaks
      *
      * @return Password
      */
@@ -38,7 +38,8 @@ trait CustomRule
         bool $hasNumbers = true,
         bool $hasSymbols = true,
         bool $uncompromised = true
-    ): Password {
+    ): Password
+    {
         $passwordRule = Password::min($min);
 
         $hasMixed && $passwordRule->mixedCase();
@@ -55,9 +56,9 @@ trait CustomRule
      * Useful for validating foreign keys or relational references,
      * with support for additional query conditions.
      *
-     * @param string        $table         Database table name
-     * @param string        $column        Column to check existence against
-     * @param Closure|null $whereClosure  Optional query constraints
+     * @param string $table Database table name
+     * @param string $column Column to check existence against
+     * @param Closure|null $whereClosure Optional query constraints
      *
      * @return Exists
      */
@@ -65,7 +66,8 @@ trait CustomRule
         string   $table,
         string   $column = 'id',
         ?Closure $whereClosure = null
-    ): Exists {
+    ): Exists
+    {
         $existsRule = Rule::exists($table, $column);
 
         if ($whereClosure) {
@@ -81,10 +83,10 @@ trait CustomRule
      * Commonly used for fields like email, username, or phone number,
      * with support for update scenarios using ignore().
      *
-     * @param string        $table         Database table name
-     * @param string        $column        Column that must be unique
-     * @param Closure|null $whereClosure  Optional query constraints
-     * @param mixed|null   $ignoreId      ID to ignore during uniqueness check
+     * @param string $table Database table name
+     * @param string $column Column that must be unique
+     * @param Closure|null $whereClosure Optional query constraints
+     * @param mixed|null $ignoreId ID to ignore during uniqueness check
      *
      * @return Unique
      */
@@ -93,7 +95,8 @@ trait CustomRule
         string   $column,
         ?Closure $whereClosure = null,
         mixed    $ignoreId = null
-    ): Unique {
+    ): Unique
+    {
         $uniqueRule = Rule::unique($table, $column);
 
         if ($whereClosure) {
@@ -113,9 +116,9 @@ trait CustomRule
      * Assumes a boolean-like column (e.g. is_active) is used
      * to indicate active rows.
      *
-     * @param string $table          Database table name
-     * @param string $column         Column to check existence against
-     * @param string $activeColumn  Column that represents active status
+     * @param string $table Database table name
+     * @param string $column Column to check existence against
+     * @param string $activeColumn Column that represents active status
      *
      * @return Exists
      */
@@ -123,7 +126,8 @@ trait CustomRule
         string $table,
         string $column = 'id',
         string $activeColumn = 'is_active'
-    ): Exists {
+    ): Exists
+    {
         return Rule::exists($table, $column)
             ->where($activeColumn, true);
     }
@@ -135,11 +139,11 @@ trait CustomRule
      * - unique email per company
      * - unique username per tenant
      *
-     * @param string      $table        Database table name
-     * @param string      $column       Column that must be unique
-     * @param string      $scopeColumn  Column defining the scope
-     * @param mixed       $scopeValue   Value of the scope column
-     * @param mixed|null $ignoreId     ID to ignore during uniqueness check
+     * @param string $table Database table name
+     * @param string $column Column that must be unique
+     * @param string $scopeColumn Column defining the scope
+     * @param mixed $scopeValue Value of the scope column
+     * @param mixed|null $ignoreId ID to ignore during uniqueness check
      *
      * @return Unique
      */
@@ -149,7 +153,8 @@ trait CustomRule
         string $scopeColumn,
         mixed  $scopeValue,
         mixed  $ignoreId = null
-    ): Unique {
+    ): Unique
+    {
         $rule = Rule::unique($table, $column)
             ->where($scopeColumn, $scopeValue);
 
@@ -158,5 +163,15 @@ trait CustomRule
         }
 
         return $rule;
+    }
+
+    public function EnglishTextOnly(): string
+    {
+        return 'regex:/^[A-Za-z -]+$/u';
+    }
+
+    public function ArabicTextOnly(): string
+    {
+        return 'regex:/^[\p{Arabic} ]+$/u';
     }
 }
