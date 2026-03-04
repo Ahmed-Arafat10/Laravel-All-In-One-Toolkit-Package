@@ -4,110 +4,134 @@ namespace AhmedArafat\AllInOne\Helpers;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class FileUploader
 {
     /**
-     * @param $file
-     * @param null $namePrefix
-     * @return string
+     * Generate a unique file name.
+     *
+     * This method builds a file name using:
+     * - Optional prefix
+     * - Current timestamp (Y_m_d_H_i_s_)
+     * - Laravel's hashed file name
+     *
+     * Example output:
+     * user_2026_03_04_02_33_21_a8f5f167f44f4964e6c998dee827110c.jpg
+     *
+     * @param UploadedFile $file   The uploaded file instance.
+     * @param string|null  $prefix Optional prefix to prepend to the file name.
+     *
+     * @return string Generated file name including extension.
      */
-    public static function getFileName($file, $namePrefix = null): string
-    {
-        $namePrefix = $namePrefix ? $namePrefix . '_' : '';
-        $name = $file->hashName() ? $file->hashName() : mt_rand(1111111, 99999999);
-        return $namePrefix . Carbon::now()->format('Y_m_d_h_i_s_') . $name;
+    public static function generateFileName(
+        UploadedFile $file,
+        ?string $prefix = null
+    ): string {
+        $prefix = $prefix ? $prefix . '_' : '';
+
+        return $prefix .
+            Carbon::now()->format('Y_m_d_H_i_s_') .
+            $file->hashName();
     }
 
     /**
-     * @param $file
-     * @param string $fileName
-     * @param string $path
-     * @return void
+     * Upload a file to the specified disk and path.
+     *
+     * If an old file name is provided, it will be deleted after the new file is stored.
+     *
+     * If the file is null, the method returns null.
+     *
+     * @param UploadedFile|null $file     The uploaded file instance.
+     * @param string            $path     Directory path inside the disk.
+     * @param string|null       $oldFile  Existing file name to delete (optional).
+     * @param string|null       $prefix   Optional prefix for generated file name.
+     * @param string            $disk     Filesystem disk name e.g. public/local (default: public).
+     *
+     * @return array|null Returns:
+     *                    [
+     *                        'fileName' => string,
+     *                        'originalName' => string
+     *                    ]
+     *                    or null if no file was uploaded.
      */
-    public static function storeFile($file, string $fileName, string $path): void
-    {
-        $file->move(public_path($path), $fileName);
-    }
-
-    /**
-     * @param string $path
-     * @param string|null $oldImageName
-     * @return int
-     */
-    public static function deleteOldFile(string $path, ?string $oldImageName): int
-    {
-        $path = public_path($path) . $oldImageName;
-        if (File::exists($path)) {
-            return File::delete($path);
+    public static function upload(
+        ?UploadedFile $file,
+        string $path,
+        ?string $oldFile = null,
+        ?string $prefix = null,
+        string $disk = 'public'
+    ): ?array {
+        if (!$file) {
+            return null;
         }
-        return -1;
+
+        $fileName = self::generateFileName($file, $prefix);
+
+        Storage::disk($disk)->putFileAs(
+            $path,
+            $file,
+            $fileName
+        );
+
+        if ($oldFile) {
+            self::delete($path, $oldFile, $disk);
+        }
+
+        return [
+            'fileName' => $fileName,
+            'originalName' => $file->getClientOriginalName(),
+        ];
     }
 
     /**
-     * @param $request
-     * @param $fileInputName
-     * @param string $path
-     * @param string|null $oldImageName
-     * @param int $w
-     * @param int $h
-     * @param null $namePrefix
-     * @return array|null
+     * Delete a file from the specified disk.
+     *
+     * @param string $path     Directory path inside the disk.
+     * @param string $fileName File name including extension.
+     * @param string $disk     Filesystem disk name e.g. public/local (default: public).
+     *
+     * @return bool True if file was deleted successfully, false otherwise.
      */
-    public static function Uploader($request, $fileInputName, string $path, ?string $oldImageName, int $w = 0, int $h = 0, $namePrefix = null): ?array
-    {
-        # FLAG is used to handle multiple images input
-        $flag = $fileInputName instanceof UploadedFile;
-        if ($flag || $request->hasFile($fileInputName)) {
-            $file = $flag ? $fileInputName : $request->file($fileInputName);
-            $fileNewName = self::getFileName($file, $namePrefix);
-            if (!$w && !$h) self::storeFile($file, $fileNewName, $path);
-            else self::resize($file, $w, $h, $path, $fileNewName);
-            if ($oldImageName != null) self::deleteOldFile($path, $oldImageName);
-            return [$fileNewName, $file->getClientOriginalName()];
-        }
-        return null;
-    }
+    public static function delete(
+        string $path,
+        string $fileName,
+        string $disk = 'public'
+    ): bool {
+        $fullPath = $path . '/' . $fileName;
 
-    public static function resize($file, int $w, int $h, string $path, string $fileNewName)
-    {
-//        $manager = new ImageManager(new Driver());
-//        $manager->read($file)
-//            ->resize($w, $h)
-//            ->toWebp(50)
-//            ->save($path . $fileNewName);
-    }
-
-    # testing
-    public static function changeImageFormat()
-    {
-        // $manager = new ImageManager(new Driver());
-        // $manager->read(public_path('frontend/t.png'))->toWebp(50)
-        //   ->save('frontend/t2.webp');
+        return Storage::disk($disk)->exists($fullPath)
+            ? Storage::disk($disk)->delete($fullPath)
+            : false;
     }
 
     /**
-     * @param $model
-     * @param $filePath
-     * @param $dbFileNameKey
-     * @param array $files_ids
-     * @param string $colNameToSearchWith
-     * @return void
+     * Generate a publicly accessible URL for a stored file.
+     *
+     * If the file does not exist or file name is null,
+     * the default asset path will be returned.
+     *
+     * @param string      $path     Directory path inside the disk.
+     * @param string|null $fileName File name including extension.
+     * @param string      $disk     Filesystem disk name e.g. public/local (default: public).
+     * @param string      $default  Default asset path if file is missing.
+     *
+     * @return string Public URL to the file or default asset URL.
      */
-    public static function handleDeleteFiles($model, $filePath, $dbFileNameKey, $files_ids, string $colNameToSearchWith = 'id'): void
-    {
-        // $model->getRawOriginal('file_name')
-        if (is_array($files_ids) && !empty($files_ids)) {
-            DB::transaction(function () use (&$files_ids, &$model, &$colNameToSearchWith, &$filePath, &$dbFileNameKey) {
-                $objects = $model::whereIn($colNameToSearchWith, $files_ids);
-                $objects->get()->each(function ($model) use (&$filePath, &$dbFileNameKey) {
-                    FileUploader::deleteOldFile($filePath, $model->getRawOriginal($dbFileNameKey));
-                });
-                $objects->delete();
-            });
+    public static function url(
+        string $path,
+        ?string $fileName = null,
+        string $disk = 'public',
+        string $default = 'NoImg.jpg'
+    ): string {
+        if (!$fileName) {
+            return asset($default);
         }
-    }
 
+        $fullPath = $path . '/' . $fileName;
+
+        return Storage::disk($disk)->exists($fullPath)
+            ? Storage::disk($disk)->url($fullPath)
+            : asset($default);
+    }
 }
