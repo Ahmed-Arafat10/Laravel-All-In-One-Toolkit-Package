@@ -20,7 +20,9 @@ class SmartMailSender
         $lock = Cache::lock($lockKey, 10);
         if (!$lock->get())  return;
         try {
-            while ($account = SmtpPoolManager::next()) {
+            while ($account = SmtpPoolManager::next(
+                config('all-in-one.smtpData.isTesting')
+            )) {
                 SmtpConfigApplier::apply($account);
                 try {
                    Mail::to($to)->send($mailable);
@@ -42,7 +44,6 @@ class SmartMailSender
                 'toEmail' => $to
             ]);
             throw new Exception("All SMTP accounts exhausted");
-
         } finally {
             optional($lock)->release();
         }
