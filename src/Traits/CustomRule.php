@@ -143,8 +143,8 @@ trait CustomRule
      * @param string $column Column that must be unique
      * @param string $scopeColumn Column defining the scope
      * @param mixed $scopeValue Value of the scope column
-     * @param mixed|null $ignoreId ID to ignore during uniqueness check
-     *
+     * @param mixed|null $ignoreVal ID to ignore during uniqueness check
+     * @param mixed|null $ignoreCol column to query with during uniqueness check
      * @return Unique
      */
     public function uniqueScopedRule(
@@ -152,14 +152,15 @@ trait CustomRule
         string $column,
         string $scopeColumn,
         mixed  $scopeValue,
-        mixed  $ignoreId = null
+        mixed  $ignoreVal = null,
+        mixed  $ignoreCol = null,
     ): Unique
     {
         $rule = Rule::unique($table, $column)
             ->where($scopeColumn, $scopeValue);
 
-        if ($ignoreId !== null) {
-            $rule->ignore($ignoreId);
+        if ($ignoreVal !== null) {
+            $rule->ignore($ignoreVal, $ignoreCol);
         }
 
         return $rule;

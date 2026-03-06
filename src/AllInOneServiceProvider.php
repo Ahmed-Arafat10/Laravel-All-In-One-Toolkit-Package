@@ -24,6 +24,18 @@ class AllInOneServiceProvider extends ServiceProvider
                     config_path('all-in-one.php'),
             ], 'all-in-one-config');
         }
+
+        // Register SmartMailSender logging channel
+        if (!config()->has('logging.channels.SmartMailSender')) {
+            config([
+                'logging.channels.SmartMailSender' => [
+                    'driver' => 'single',
+                    'path' => storage_path('logs/SmartMailSender.log'),
+                    'level' => 'debug',
+                ],
+            ]);
+        }
+
         $this->app['router']->aliasMiddleware('jwt', JwtMiddleware::class);
     }
 
