@@ -28,22 +28,24 @@ class GitCommand extends Command
     /**
      * Display Git status, stage changes, commit with the supplied message and push the selected branch.
      */
-    public function handle()
+    public function handle(): int
     {
-        Process::run('git status', function (string $type, string $output) {
-            $this->info($output);
-        });
-
-        Process::run('git add .', function (string $type, string $output) {
-            $this->info($output);
-        });
+        $output = function (string $type, string $output) {
+            $this->output->write($output);
+        };
         $time = Carbon::now('Africa/Cairo')->format('h:i a Y/m/d');
-        Process::run("git commit -m \" {$this->argument('msg')} --- {$time} \" ", function (string $type, string $output) {
-            $this->info($output);
-        });
-        $t1 = Process::forever()->run("git push {$this->argument('remote')} {$this->argument('branch')}",
-            function (string $type, string $output) {
-                $this->info($output);
-            });
+        $message = $this->argument('msg') . ' --- ' . $time;
+
+        foreach ([['git', 'status'], ['git', 'add', '.'], ['git', 'commit', '-m', $message]] as $command) {
+            $result = Process::run($command, $output);
+            if ($result->failed()) {
+                return $result->exitCode();
+            }
+        }
+
+        return Process::forever()->run(
+            ['git', 'push', '--', $this->argument('remote'), $this->argument('branch')],
+            $output
+        )->exitCode();
     }
 }

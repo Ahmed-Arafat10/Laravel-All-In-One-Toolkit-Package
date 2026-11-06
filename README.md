@@ -102,7 +102,7 @@ class GitCommand extends Command
     /**
      * Display Git status, stage changes, commit with the supplied message and push the selected branch.
      */
-    public function handle();
+    public function handle(): int;
 }
 ```
 
@@ -652,6 +652,28 @@ trait SeederHelperTrait
 
 ## Eloquent Traits
 
+For example, expose a filter named `type` for the `category` column and allow keyword searches on product names.
+
+```php
+use AhmedArafat\AllInOne\Traits\Eloquent\FilterableTrait;
+use AhmedArafat\AllInOne\Traits\Eloquent\SearchableTrait;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    use FilterableTrait, SearchableTrait;
+
+    protected $filterableColumns = ['products' => ['columns' => ['type' => 'category']]];
+    protected $searchableColumns = ['products' => ['columns' => ['name']]];
+}
+```
+
+For a request to `/products?filter_col=type&filter_val=fruit&search=apple`, the following query returns fruit with a matching name.
+
+```php
+$products = Product::query()->filter()->search()->get();
+```
+
 ### `FilterableTrait`
 
 **Purpose:**
@@ -1097,7 +1119,7 @@ class SmtpPoolManager
     /**
      * Return Mailpit in testing mode or the first account below its daily limit, or null if exhausted.
      */
-    public static function next(bool $isTesting = false): ?array;
+    public static function next(bool $isTesting = false, array $excludedAccounts = []): ?array;
 
     /**
      * Increment and return the account's cached send count for today.

@@ -3,7 +3,6 @@
 namespace AhmedArafat\AllInOne\Traits\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
-use function AhmedArafat\AllInOne\Traits\request;
 
 /**
  * Search configured columns on the model and its relationships using the search query parameter.

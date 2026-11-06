@@ -16,6 +16,9 @@ class SmtpConfigApplier
      */
     public static function apply(array $account): void
     {
+        // A mailer URL would override the individual account settings.
+        Config::set('mail.mailers.smtp.url', null);
+
         if ($account['name'] === 'mailpit') {
             Config::set('mail.mailers.smtp.transport', 'smtp');
             Config::set('mail.mailers.smtp.host', $account['host']);

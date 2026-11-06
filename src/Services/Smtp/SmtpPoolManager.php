@@ -12,10 +12,16 @@ class SmtpPoolManager
 {
     /**
      * Return Mailpit in testing mode or the first account below its daily limit, or null if exhausted.
+     *
+     * @param list<string> $excludedAccounts Account names already tried for this delivery.
      */
-    public static function next(bool $isTesting = false): ?array
+    public static function next(bool $isTesting = false, array $excludedAccounts = []): ?array
     {
         if ($isTesting) {
+            if (in_array('mailpit', $excludedAccounts, true)) {
+                return null;
+            }
+
             return [
                 'name' => 'mailpit',
                 'username' => 'mailpit',
@@ -27,6 +33,10 @@ class SmtpPoolManager
         $accounts = config('all-in-one.smtpData.accounts');
         $limit = config('all-in-one.smtpData.dailyLimit');
         foreach ($accounts as $account) {
+            if (in_array($account['name'], $excludedAccounts, true)) {
+                continue;
+            }
+
             $sent = Cache::get(self::sentKey($account['name']), 0);
             if ($sent < $limit) {
                 return $account;

@@ -4,7 +4,6 @@ namespace AhmedArafat\AllInOne\Traits\Eloquent;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use function AhmedArafat\AllInOne\Traits\request;
 
 /**
  * Filter model and related-table columns using the configured query parameter mappings.

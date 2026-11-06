@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
-use function AhmedArafat\AllInOne\Traits\__;
 
 /**
  * Order Eloquent results by configured local or related columns.

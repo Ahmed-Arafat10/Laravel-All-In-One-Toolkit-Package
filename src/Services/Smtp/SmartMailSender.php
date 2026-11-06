@@ -23,34 +23,43 @@ class SmartMailSender
     {
         $lockKey = "mail_lock_" . md5($to . serialize($mailable));
         $lock = Cache::lock($lockKey, 10);
-        if (!$lock->get())  return;
+        if (!$lock->get()) {
+            return;
+        }
+
         try {
-            while ($account = SmtpPoolManager::next(
-                config('all-in-one.smtpData.isTesting')
-            )) {
-                SmtpConfigApplier::apply($account);
+            $attempted = [];
+            $isTesting = (bool) config('all-in-one.smtpData.isTesting');
+            $lastFailure = null;
+            while ($account = SmtpPoolManager::next($isTesting, $attempted)) {
+                $attempted[] = $account['name'];
                 try {
-                   Mail::to($to)->send($mailable);
-                   $keyCount = SmtpPoolManager::markSent($account['name']);
-                    Log::channel('SmartMailSender')->info("SmartMailSender Execution Success", [
-                        'mailable' => $mailable::class,
-                        'toEmail' => $to,
-                        'keyCount' => $keyCount,
-                        'smtpUsername' => $account['username']
-                    ]);
-                    return;
+                    SmtpConfigApplier::apply($account);
+                    Mail::purge('smtp');
+                    Mail::mailer('smtp')->to($to)->send($mailable);
                 } catch (Throwable $e) {
+                    $lastFailure = $e;
                     report($e);
                     continue;
                 }
+
+                $keyCount = SmtpPoolManager::markSent($account['name']);
+                Log::channel('SmartMailSender')->info("SmartMailSender Execution Success", [
+                    'mailable' => $mailable::class,
+                    'toEmail' => $to,
+                    'keyCount' => $keyCount,
+                    'smtpUsername' => $account['username']
+                ]);
+                return;
             }
+
             Log::channel('SmartMailSender')->error("SmartMailSender Execution Failed", [
                 'mailable' => $mailable::class,
                 'toEmail' => $to
             ]);
-            throw new Exception("All SMTP accounts exhausted");
+            throw new Exception("All SMTP accounts exhausted", 0, $lastFailure);
         } finally {
-            optional($lock)->release();
+            $lock->release();
         }
     }
 }
