@@ -20,5 +20,16 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: pdo_sqlite
           coverage: none
+      - name: Allow known Laravel advisories for legacy compatibility tests
+        if: matrix.laravel == '10' || matrix.laravel == '11'
+        # Limit the exception to dependency resolution in this job. Keep audit reporting active.
+        run: |
+          composer config --json audit.ignore '{
+            "PKSA-b41t-wbzk-9q51": {"apply": "block", "reason": "Legacy Laravel compatibility test"},
+            "PKSA-d5tc-s1qs-h781": {"apply": "block", "reason": "Legacy Laravel compatibility test"},
+            "PKSA-m5cs-t1y6-qpcs": {"apply": "block", "reason": "Legacy Laravel compatibility test"},
+            "PKSA-3r5d-mb8f-1qw9": {"apply": "block", "reason": "Legacy Laravel compatibility test"},
+            "PKSA-mdq4-51ck-6kdq": {"apply": "block", "reason": "Legacy Laravel compatibility test"}
+          }'
       - run: composer update --with "laravel/framework:^${{ matrix.laravel }}.0" --prefer-dist --no-interaction
       - run: composer test
