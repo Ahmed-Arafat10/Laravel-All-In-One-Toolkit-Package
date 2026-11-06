@@ -6,6 +6,9 @@ use AhmedArafat\AllInOne\Traits\ExcelFormatter;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
+/**
+ * Validate and extract worksheet data indexed by Excel cell address, collecting errors for the calling handler.
+ */
 class CustomExcelSheetHandler
 {
     use ExcelFormatter;
@@ -35,6 +38,12 @@ class CustomExcelSheetHandler
 
     protected array $fromToDateCells;
 
+    /**
+     * Initialize the cell-address map and the list of validation errors.
+     *
+     * @param array<string, mixed> $excelSheet Values keyed by cell address, such as A1.
+     * @param list<string> $errors Existing validation messages.
+     */
     public function __construct(
         protected array $excelSheet,
         protected array $errors = []
@@ -42,11 +51,22 @@ class CustomExcelSheetHandler
     {
     }
 
+    /**
+     * Convert an Excel serial date to a DateTime instance.
+     *
+     * @param float|int $excelDate
+     * @return \DateTime
+     */
     public static function convertExcelDate($excelDate)
     {
         return Date::excelToDateTimeObject($excelDate);
     }
 
+    /**
+     * Record missing titles and titles whose values differ from the configured text.
+     *
+     * @return void
+     */
     protected function validateTitleCells()
     {
         foreach ($this->titleCells as $cell => $val) {
@@ -56,6 +76,14 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Check consecutive cells for emptiness, or require values when reverse is enabled.
+     *
+     * @param string $col
+     * @param int $row
+     * @param bool $reverse
+     * @return void
+     */
     protected function CellsShouldBeEmptyRecursive($col, $row, $reverse = false)
     {
         $cell = $col . $row;
@@ -65,6 +93,12 @@ class CustomExcelSheetHandler
         $this->CellsShouldBeEmptyRecursive($col, $row + 1, $reverse);
     }
 
+    /**
+     * Check each configured column starting at its specified row.
+     *
+     * @param bool $reverse
+     * @return void
+     */
     protected function validateCellsShouldBeEmpty($reverse = false)
     {
         foreach ($this->cellsShouldBeEmpty as $cell) {
@@ -72,6 +106,14 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Check nonempty values in consecutive cells against the allowed set.
+     *
+     * @param array $array
+     * @param string $col
+     * @param int $row
+     * @return void
+     */
     protected function hasEnumValuesRecursive($array, $col, $row)
     {
         $cell = $col . $row;
@@ -81,6 +123,13 @@ class CustomExcelSheetHandler
     }
 
 
+    /**
+     * Record nonnumeric values while walking the column from the given row.
+     *
+     * @param string $col
+     * @param int $row
+     * @return void
+     */
     protected function mustBeNumeric($col, int $row)
     {
         $cell = $col . $row;
@@ -89,6 +138,12 @@ class CustomExcelSheetHandler
         $this->mustBeNumeric($col, $row + 1);
     }
 
+    /**
+     * Check whether a value is numeric and meets the minimum Excel serial date of 36526.
+     *
+     * @param mixed $date
+     * @return bool
+     */
     private function isDate($date)
     {
         if (!is_numeric($date)) return false;
@@ -96,6 +151,13 @@ class CustomExcelSheetHandler
         return true;
     }
 
+    /**
+     * Validate consecutive populated cells as Excel serial dates, stopping at the first empty cell.
+     *
+     * @param string $col
+     * @param int $row
+     * @return void
+     */
     protected function mustBeDate($col, int $row)
     {
         $cell = $col . $row;
@@ -110,6 +172,11 @@ class CustomExcelSheetHandler
     }
 
 
+    /**
+     * Record an error for each required cell that compares equal to null.
+     *
+     * @return void
+     */
     protected function validateRequiredCells()
     {
         foreach ($this->requiredCells as $cell) {
@@ -118,6 +185,16 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Report partially filled rows until an empty row, missing cell or exclusive row limit.
+     *
+     * @param list<string> $cols
+     * @param int $row
+     * @param string $msg
+     * @param int $i
+     * @param int|null $limitRow
+     * @return void
+     */
     protected function validateWholeCellExists(array $cols, int $row, $msg, $i = 1, $limitRow = null)
     {
         if ($limitRow && $row == $limitRow) return;
@@ -139,6 +216,17 @@ class CustomExcelSheetHandler
         $this->validateWholeCellExists($cols, $row + 1, $msg, $i + 1, $limitRow);
     }
 
+    /**
+     * Append rows to the result using the supplied keys, stopping at missing cells or the exclusive limit.
+     *
+     * @param list<string> $cols
+     * @param int $row
+     * @param list<string> $keys
+     * @param array $res
+     * @param int|null $LimitRow
+     * @param bool $allowNull
+     * @return array|null
+     */
     protected function extractWholeRowsAsArray(array $cols, int $row, array $keys, array &$res, $LimitRow = null, $allowNull = false)
     {
         if ($LimitRow && $row == $LimitRow) return
@@ -154,6 +242,15 @@ class CustomExcelSheetHandler
         $this->extractWholeRowsAsArray($cols, $row + 1, $keys, $res, $LimitRow, $allowNull);
     }
 
+    /**
+     * Require a populated cell in each listed column within the section.
+     *
+     * @param list<string> $cols
+     * @param int $row
+     * @param string $message
+     * @param int|null $limitRow
+     * @return void
+     */
     protected function validateAtLeastOneCellOccupied(array $cols, $row, $message, $limitRow = null)
     {
         foreach ($cols as $col) {
@@ -169,6 +266,15 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Require values for the specified number of rows and empty cells thereafter.
+     *
+     * @param string $col
+     * @param int $row
+     * @param int|null $limitRow
+     * @param int $i
+     * @return void
+     */
     protected function CellsShouldNotBeEmptyRecursive($col, $row, $limitRow, $i = 1)
     {
         $cell = $col . $row;
@@ -179,6 +285,12 @@ class CustomExcelSheetHandler
         $this->CellsShouldNotBeEmptyRecursive($col, $row + 1, $limitRow, $i + 1);
     }
 
+    /**
+     * Apply each configured column's required row count.
+     *
+     * @param array<int, int> $limitRowArray
+     * @return void
+     */
     protected function validateCellsShouldNotBeEmpty($limitRowArray)
     {
         foreach ($this->cellsShouldBeEmpty as $idx => $cell) {
@@ -186,6 +298,15 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Check cells through the inclusive last row, requiring values when reverse is enabled.
+     *
+     * @param string $col
+     * @param int $row
+     * @param int $limit
+     * @param bool $reverse
+     * @return void
+     */
     protected function CellsShouldBeEmptyRecursiveTillLimit($col, $row, $limit, $reverse = false)
     {
         $cell = $col . $row;
@@ -195,6 +316,12 @@ class CustomExcelSheetHandler
         $this->CellsShouldBeEmptyRecursiveTillLimit($col, $row + 1, $limit, $reverse);
     }
 
+    /**
+     * Check the configured column ranges using their inclusive end rows.
+     *
+     * @param bool $reverse
+     * @return void
+     */
     protected function validateCellsShouldBeEmptyTillLimit($reverse = false)
     {
         foreach ($this->cellsShouldBeEmptyTilLimit as $cell) {
@@ -202,6 +329,13 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Report empty sections using the label supplied with each row set.
+     *
+     * @param array{0: array, 1: string} ...$data Row sets paired with their section labels.
+     * @throws Exception When a section has no label.
+     * @return void
+     */
     protected function validateAllSectionsHaveAtLeastOneRow(...$data)
     {
         foreach ($data as $key => $item) {
@@ -210,6 +344,14 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Report a start date later than the end date for the specified row.
+     *
+     * @param string $fromDateCol
+     * @param string $toDateCol
+     * @param int $row
+     * @return void
+     */
     private function validateFromToDateRecursive($fromDateCol, $toDateCol, $row)
     {
 
@@ -227,6 +369,11 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Check the configured pairs of start and end date cells.
+     *
+     * @return void
+     */
     protected function validateFromToDate()
     {
         foreach ($this->fromToDateCells as $item) {
@@ -234,6 +381,17 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Compare worksheet rows with matching database rows and record missing rows and differing cells.
+     *
+     * @param array $dbRows
+     * @param array $ExcelRows
+     * @param array $cols
+     * @param int $startRow
+     * @param string $sectionName
+     * @param int|null $limitRow
+     * @return void
+     */
     protected function validateExcelRowsMatchDatabase($dbRows, $ExcelRows, $cols, $startRow, $sectionName, $limitRow = null)
     {
         $startRowTemp = $startRow;
@@ -263,6 +421,14 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Update the supplied frequency map and report repeated values down a column.
+     *
+     * @param string $col
+     * @param int $row
+     * @param array<array-key, int> $freq
+     * @return void
+     */
     public function validateUniqueColumnRecursive($col, $row, array &$freq)
     {
         $cell = $col . $row;
@@ -275,6 +441,11 @@ class CustomExcelSheetHandler
         $this->validateUniqueColumnRecursive($col, $row + 1, $freq);
     }
 
+    /**
+     * Check each configured column for duplicates using a separate count per column.
+     *
+     * @return void
+     */
     public function validateUniqueColumns()
     {
         foreach ($this->uniqueColumns as $item) {
@@ -283,6 +454,14 @@ class CustomExcelSheetHandler
         }
     }
 
+    /**
+     * Compare consecutive cell values with increasing integers starting at the expected number.
+     *
+     * @param string $col
+     * @param int $row
+     * @param int $curNum
+     * @return void
+     */
     private function validateNumbersAreSequentialRecursive($col, $row, $curNum = 1)
     {
         $cell = $col . $row;
@@ -292,11 +471,25 @@ class CustomExcelSheetHandler
         $this->validateNumbersAreSequentialRecursive($col, $row + 1, $curNum + 1);
     }
 
+    /**
+     * Require the column to count upwards from one at the given row.
+     *
+     * @param string $col
+     * @param int $row
+     * @return void
+     */
     public function validateNumbersAreSequential($col, $row)
     {
         $this->validateNumbersAreSequentialRecursive($col, $row);
     }
 
+    /**
+     * Collect consecutive column values until the first missing or empty cell.
+     *
+     * @param string $col
+     * @param int $row
+     * @return list<mixed>
+     */
     public function extractRecordsVales($col, $row)
     {
         $cell = $col . $row;

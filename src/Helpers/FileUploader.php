@@ -6,6 +6,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Generate upload names and store, delete or locate files on a Laravel filesystem disk.
+ */
 class FileUploader
 {
     /**

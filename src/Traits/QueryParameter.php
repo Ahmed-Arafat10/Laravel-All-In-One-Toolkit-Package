@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Look up a record by a numeric query parameter or validate a comma-separated list of IDs.
+ */
 trait QueryParameter
 {
     /**
@@ -54,7 +57,7 @@ trait QueryParameter
     }
 
     /**
-     * Validate and resolve a multi-select query parameter.
+     * Return the distinct integer IDs after verifying that each exists in the selected column.
      *
      * Example:
      * ?ids=1,2,3

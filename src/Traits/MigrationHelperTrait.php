@@ -7,11 +7,16 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
+/**
+ * Define translation tables and file metadata columns in migrations.
+ */
 trait MigrationHelperTrait
 {
     /**
-     * @param $tableName
-     * @param $cols
+     * Create a translations table with a cascading foreign key and one row per parent and locale.
+     *
+     * @param string $tableName
+     * @param array $cols
      * @return void
      */
     public function createTranslatableRelation($tableName, $cols): void
@@ -36,6 +41,8 @@ trait MigrationHelperTrait
     }
 
     /**
+     * Add prefixed stored and original filename columns with optional size and extension columns.
+     *
      * @param Blueprint $table
      * @param string $prefix
      * @param bool $hasSize
@@ -55,6 +62,8 @@ trait MigrationHelperTrait
         if ($hasExtension) $table->unsignedBigInteger($prefix . '_file_ext')->nullable();
     }
     /**
+     * Add standard file name, original name, size and extension columns.
+     *
      * @param Blueprint $table
      * @return void
      */

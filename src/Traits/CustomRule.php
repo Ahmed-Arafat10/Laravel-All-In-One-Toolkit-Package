@@ -166,11 +166,17 @@ trait CustomRule
         return $rule;
     }
 
+    /**
+     * Return a validation regex accepting ASCII letters, spaces and hyphens.
+     */
     public function EnglishTextOnly(): string
     {
         return 'regex:/^[A-Za-z -]+$/u';
     }
 
+    /**
+     * Return a validation regex accepting Arabic-script characters and spaces.
+     */
     public function ArabicTextOnly(): string
     {
         return 'regex:/^[\p{Arabic} ]+$/u';

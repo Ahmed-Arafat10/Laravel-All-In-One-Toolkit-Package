@@ -6,6 +6,9 @@ namespace AhmedArafat\AllInOne\Helpers;
 
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+/**
+ * Count attempts against a cache key and raise an HTTP 429 exception when the limit is reached.
+ */
 class RateLimiterHelper
 {
     /**

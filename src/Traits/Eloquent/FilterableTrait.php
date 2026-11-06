@@ -6,11 +6,16 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use function AhmedArafat\AllInOne\Traits\request;
 
+/**
+ * Filter model and related-table columns using the configured query parameter mappings.
+ */
 trait FilterableTrait
 {
     /**
+     * Add an equality condition on a table-qualified column.
+     *
      * @param Builder $q
-     * @param $col
+     * @param string $col
      * @param string $table
      * @param string $search
      * @return void
@@ -22,10 +27,12 @@ trait FilterableTrait
     }
 
     /**
+     * Apply the filter value directly to a column on the model's table.
+     *
      * @param Builder $q
-     * @param $column
-     * @param $search
-     * @param $relation
+     * @param string $column
+     * @param string $search
+     * @param string $relation
      * @return void
      */
     public function filterInSameRelation(Builder &$q, &$column, $search, $relation): void
@@ -34,11 +41,13 @@ trait FilterableTrait
     }
 
     /**
+     * Require a related row whose mapped column equals the filter value.
+     *
      * @param Builder $q
-     * @param $column
-     * @param $search
-     * @param $relation
-     * @param $methodName
+     * @param string $column
+     * @param string $search
+     * @param string $relation
+     * @param string $methodName
      * @return void
      */
     public function filterInAnotherRelation(Builder &$q, &$column, $search, $relation, $methodName): void
@@ -50,6 +59,14 @@ trait FilterableTrait
         });
     }
 
+    /**
+     * Split a comma-separated filter parameter and reject empty entries.
+     *
+     * @param string $url
+     * @param string $keyName
+     * @throws Exception When the list contains an empty entry.
+     * @return list<string>
+     */
     private function checkFormat($url, $keyName)
     {
         $arr = explode(',', $url);
@@ -60,6 +77,8 @@ trait FilterableTrait
     }
 
     /**
+     * Apply paired column and value filters from the request using the model's filterableColumns map.
+     *
      * @param Builder $q
      * @param string $filterColKey
      * @param string $filterValKey

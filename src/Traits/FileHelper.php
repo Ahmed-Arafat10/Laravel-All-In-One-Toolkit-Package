@@ -8,6 +8,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
+/**
+ * Decode stored JSON files and collect metadata about uploaded files.
+ */
 trait FileHelper
 {
     /**

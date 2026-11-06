@@ -5,8 +5,14 @@ namespace AhmedArafat\AllInOne\Services\Smtp;
 
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Select an SMTP account and track its daily send count in the cache.
+ */
 class SmtpPoolManager
 {
+    /**
+     * Return Mailpit in testing mode or the first account below its daily limit, or null if exhausted.
+     */
     public static function next(bool $isTesting = false): ?array
     {
         if ($isTesting) {
@@ -29,6 +35,11 @@ class SmtpPoolManager
         return null;
     }
 
+    /**
+     * Increment and return the account's cached send count for today.
+     *
+     * @return int|false
+     */
     public static function markSent(string $accountName)
     {
         $key = self::sentKey($accountName);
@@ -36,6 +47,9 @@ class SmtpPoolManager
         return Cache::increment($key);
     }
 
+    /**
+     * Build the daily cache key for an account name.
+     */
     private static function sentKey(string $name): string
     {
         return "smtp5_sent_{$name}_" . now()->format('Y_m_d');

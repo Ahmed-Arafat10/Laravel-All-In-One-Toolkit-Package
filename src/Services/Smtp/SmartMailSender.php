@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
+/**
+ * Send a mailable using an SMTP account selected from the configured pool.
+ */
 class SmartMailSender
 {
     /**
+     * Acquire a lock for the recipient and mailable, then attempt delivery through the SMTP pool.
+     *
      * @throws Exception
      */
     public static function send(Mailable $mailable, string $to): void

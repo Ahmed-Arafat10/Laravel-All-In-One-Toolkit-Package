@@ -12,6 +12,9 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use AhmedArafat\AllInOne\Traits\JsonApiResponser;
 
+/**
+ * Authenticate a JWT for the selected guard and return a JSON error when authentication fails.
+ */
 class JwtMiddleware
 {
     use JsonApiResponser;

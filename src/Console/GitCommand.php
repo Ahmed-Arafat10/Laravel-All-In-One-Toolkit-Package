@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 
+/**
+ * Stage local changes, commit them with a Cairo timestamp and push to the requested remote and branch.
+ */
 class GitCommand extends Command
 {
     /**
@@ -23,7 +26,7 @@ class GitCommand extends Command
     protected $description = 'git add . then commit them push to GitHub';
 
     /**
-     * Execute the console command.
+     * Display Git status, stage changes, commit with the supplied message and push the selected branch.
      */
     public function handle()
     {

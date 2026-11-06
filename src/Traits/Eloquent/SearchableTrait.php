@@ -5,11 +5,16 @@ namespace AhmedArafat\AllInOne\Traits\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use function AhmedArafat\AllInOne\Traits\request;
 
+/**
+ * Search configured columns on the model and its relationships using the search query parameter.
+ */
 trait SearchableTrait
 {
     /**
+     * Add LIKE predicates for each word and column and order by match count.
+     *
      * @param Builder $query
-     * @param $columnsArray
+     * @param string[] $columnsArray
      * @param string $table
      * @param string $search
      * @return void
@@ -30,6 +35,8 @@ trait SearchableTrait
     }
 
     /**
+     * Build a SQL expression that counts matching word and column pairs.
+     *
      * @param array $columnsArray
      * @param string $table
      * @param array $words
@@ -47,11 +54,13 @@ trait SearchableTrait
     }
 
     /**
+     * Group keyword predicates for columns on the current model.
+     *
      * @param Builder $q
      * @param array $columns
-     * @param $search
-     * @param $relation
-     * @param $countIterations
+     * @param string $search
+     * @param string $relation
+     * @param int $countIterations
      * @return void
      */
     public function searchInSameRelation(Builder &$q, array &$columns, $search, $relation, &$countIterations): void
@@ -63,12 +72,14 @@ trait SearchableTrait
     }
 
     /**
+     * Group keyword predicates within a relationship existence query.
+     *
      * @param Builder $q
      * @param array $columns
-     * @param $search
-     * @param $relation
-     * @param $methodName
-     * @param $countIterations
+     * @param string $search
+     * @param string $relation
+     * @param string $methodName
+     * @param int $countIterations
      * @return void
      */
     public function searchInAnotherRelation(Builder &$q, array &$columns, $search, $relation, $methodName, &$countIterations): void
@@ -82,6 +93,8 @@ trait SearchableTrait
     }
 
     /**
+     * Apply the request's search terms to the model's configured searchableColumns.
+     *
      * @param Builder $q
      * @return Builder
      */

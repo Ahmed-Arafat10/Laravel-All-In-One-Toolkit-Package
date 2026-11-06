@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use function Laravel\Prompts\progress;
 
+/**
+ * Split phpMyAdmin SQL dumps in public/DB into per-database files under public/Result.
+ */
 class PhpMyAdminDatabaseTablesExtractorCommand extends Command
 {
     /**
@@ -36,6 +39,9 @@ class PhpMyAdminDatabaseTablesExtractorCommand extends Command
     private array $uniqueDatabaseFolders = [];
     private int $numOfDuplicationDatabases = 0;
 
+    /**
+     * Collect input files from public/DB and prepare the SQL transaction header.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -51,6 +57,11 @@ SET time_zone = "+00:00";
 SQL;
     }
 
+    /**
+     * Create a directory under the public path if needed and record its creation.
+     *
+     * @param string $folderName
+     */
     private function createFolder($folderName): void
     {
         if (!File::exists(public_path($folderName))) {
@@ -60,6 +71,12 @@ SQL;
         }
     }
 
+    /**
+     * Group SQL lines by database and suffix database names in CREATE DATABASE and USE statements.
+     *
+     * @param string[] $fileContentArray
+     * @param array $allFiles
+     */
     private function processSingleFile(&$fileContentArray, &$allFiles): void
     {
         $newFile = $this->newFileHeader;
@@ -93,6 +110,11 @@ SQL;
         }
     }
 
+    /**
+     * Read a dump, split it into database sections and write the results.
+     *
+     * @param \Symfony\Component\Finder\SplFileInfo $file
+     */
     private function handleSingleSqlFile($file): void
     {
         $allFiles = [];
@@ -104,6 +126,11 @@ SQL;
         $this->handleFileProcessingResult($allFiles);
     }
 
+    /**
+     * Write SQL sections into per-database folders and count repeated database names.
+     *
+     * @param array $allFiles
+     */
     private function handleFileProcessingResult(&$allFiles): void
     {
         foreach ($allFiles as $databaseName => $databases) {
@@ -124,7 +151,7 @@ SQL;
     }
 
     /**
-     * Handle the incoming request.
+     * Process the input dumps and report output folders and duplicate database sections.
      */
     public function handle(): void
     {

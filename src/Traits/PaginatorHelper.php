@@ -5,6 +5,9 @@ namespace AhmedArafat\AllInOne\Traits;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
+/**
+ * Add a continuous row number to each item across pages.
+ */
 trait PaginatorHelper
 {
     /**

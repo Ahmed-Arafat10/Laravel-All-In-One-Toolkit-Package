@@ -9,6 +9,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Maatwebsite\Excel\Facades\Excel;
 
+/**
+ * Read uploaded worksheets as rows or as values keyed by Excel cell address.
+ */
 trait ExcelFormatter
 {
     /**

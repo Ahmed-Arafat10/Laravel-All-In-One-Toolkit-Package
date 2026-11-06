@@ -10,10 +10,15 @@ use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 use function AhmedArafat\AllInOne\Traits\__;
 
+/**
+ * Order Eloquent results by configured local or related columns.
+ */
 trait SortableTrait
 {
 
     /**
+     * Build a CONCAT expression using qualified column names and the configured separator.
+     *
      * @param array $data
      * @param string $relationName
      * @return string
@@ -36,6 +41,8 @@ trait SortableTrait
     }
 
     /**
+     * Return the configured CONCAT expression or an empty string for other operations.
+     *
      * @param array $data
      * @param string $relationName
      * @return string
@@ -47,7 +54,9 @@ trait SortableTrait
     }
 
     /**
-     * @param $target
+     * Look up the requested sort key and return its column and relationship metadata.
+     *
+     * @param string $target
      * @return array|int[]
      */
     public function validateColumns($target): array
@@ -76,6 +85,8 @@ trait SortableTrait
     }
 
     /**
+     * Order the query by a configured column in ascending or descending order.
+     *
      * @throws Exception
      */
     public function scopeSortByColumn(Builder $q, $target = null, $dir = null): Builder
@@ -99,11 +110,13 @@ trait SortableTrait
     }
 
     /**
+     * Join the related table and select a sort alias, using MAX for a has-many relation.
+     *
      * @param Builder $query
-     * @param $relation_name
-     * @param $operator
-     * @param $type
-     * @param $where
+     * @param string $relation_name
+     * @param string $operator
+     * @param string $type
+     * @param bool $where
      * @return Builder
      */
     public function addOrderByColumnFromRelation(Builder $query, $relation_name, $operator = '=', $type = 'left', $where = false): Builder
@@ -130,7 +143,9 @@ trait SortableTrait
     }
 
     /**
-     * @param $table
+     * Qualify the model's column names with the supplied table name.
+     *
+     * @param string $table
      * @return string[]
      */
     protected function getTableColumns($table): array

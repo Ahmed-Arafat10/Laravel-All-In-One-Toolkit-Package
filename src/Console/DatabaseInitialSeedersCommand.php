@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 use function Laravel\Prompts\progress;
 
+/**
+ * Run the seeders listed in the package configuration with the db:setup command.
+ */
 class DatabaseInitialSeedersCommand extends Command
 {
     /**
@@ -26,6 +29,9 @@ class DatabaseInitialSeedersCommand extends Command
 
     private array $allSeedersObjects = [];
 
+    /**
+     * Load the seeder class names from all-in-one.database_seeders.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -33,6 +39,8 @@ class DatabaseInitialSeedersCommand extends Command
     }
 
     /**
+     * Run the configured seeders in one database transaction and display their progress.
+     *
      * @throws Throwable
      */
     private function executeAllSeeders(): void
@@ -49,7 +57,7 @@ class DatabaseInitialSeedersCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Run the configured seeders and report completion.
      *
      * @throws Exception|Throwable
      */

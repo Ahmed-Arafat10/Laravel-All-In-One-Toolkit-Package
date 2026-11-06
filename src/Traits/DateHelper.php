@@ -7,6 +7,9 @@ use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 use Throwable;
 
+/**
+ * Parse, compare and format dates with Carbon.
+ */
 trait DateHelper
 {
     /**

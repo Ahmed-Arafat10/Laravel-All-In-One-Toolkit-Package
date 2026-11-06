@@ -4,11 +4,16 @@ namespace AhmedArafat\AllInOne\Traits;
 
 use Exception;
 
+/**
+ * Seed English and Arabic translations together with optional shared model attributes.
+ */
 trait SeederHelperTrait
 {
     /**
+     * Update or create records by sequential ID from aligned English and Arabic seed rows.
+     *
      * @param array $data
-     * @param $model
+     * @param class-string<\Illuminate\Database\Eloquent\Model> $model
      * @param array $cols
      * @param string|null $add_cols
      * @return void

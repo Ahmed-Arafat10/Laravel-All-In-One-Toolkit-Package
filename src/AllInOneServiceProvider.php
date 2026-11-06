@@ -8,8 +8,14 @@ use AhmedArafat\AllInOne\Middleware\JwtMiddleware;
 use Illuminate\Support\ServiceProvider;
 
 
+/**
+ * Register package configuration, console commands, the mail log channel and JWT middleware.
+ */
 class AllInOneServiceProvider extends ServiceProvider
 {
+    /**
+     * Register console commands and publishable configuration, configure mail logging and alias the jwt middleware.
+     */
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
@@ -39,6 +45,9 @@ class AllInOneServiceProvider extends ServiceProvider
         $this->app['router']->aliasMiddleware('jwt', JwtMiddleware::class);
     }
 
+    /**
+     * Merge the package defaults into the application's all-in-one configuration.
+     */
     public function register(): void
     {
         // bindings, config merge, singletons
