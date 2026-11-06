@@ -6,8 +6,7 @@ namespace AhmedArafat\AllInOne\Helpers;
 
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
-
-final class RateLimiterHelper
+class RateLimiterHelper
 {
     /**
      * Apply rate limiting for the given key.
